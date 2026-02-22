@@ -2,85 +2,189 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>我的私人导航站</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>咳咳</title>
+    
     <style>
-        /* 基础页面样式 */
-        body { font-family: "Microsoft YaHei", sans-serif; background-color: #f4f7f6; color: #333; padding: 40px; max-width: 1000px; margin: 0 auto; }
-        h1 { text-align: center; color: #2c3e50; margin-bottom: 40px; }
-        .category-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .category-card { background-color: #ffffff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s; }
-        .category-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-        .category-title { font-size: 1.2rem; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 15px; }
+        /* 深浅模式颜色变量 */
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --title-color: #2c3e50;
+            --line-color: #3498db;
+            --link-color: #2c3e50;
+            --link-hover-bg: #ecf0f1;
+            --link-hover-color: #e74c3c;
+            --desc-color: #7f8c8d;
+        }
+
+        body.dark-mode {
+            --bg-color: #1a1a2e;
+            --text-color: #e0e0e0;
+            --card-bg: #16213e;
+            --title-color: #e94560;
+            --line-color: #e94560;
+            --link-color: #e0e0e0;
+            --link-hover-bg: #0f3460;
+            --link-hover-color: #ffffff;
+            --desc-color: #a0a0a0;
+        }
+
+        /* 基础样式 */
+        body { font-family: "Microsoft YaHei", sans-serif; background-color: var(--bg-color); color: var(--text-color); padding: 40px; max-width: 1000px; margin: 0 auto; transition: background-color 0.3s, color 0.3s; }
+        h1 { text-align: center; color: var(--title-color); margin-bottom: 40px; }
+        
+        /* 卡片与链接布局 */
+        .category-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .category-card { background-color: var(--card-bg); border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.2s, background-color 0.3s; }
+        .category-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .category-title { font-size: 1.2rem; font-weight: bold; color: var(--title-color); border-bottom: 2px solid var(--line-color); padding-bottom: 10px; margin-bottom: 15px; transition: color 0.3s; }
         ul { list-style-type: none; padding: 0; margin: 0; }
         li { margin-bottom: 12px; }
-        a { text-decoration: none; color: #2980b9; font-weight: bold; display: block; padding: 8px; border-radius: 6px; }
-        a:hover { background-color: #ecf0f1; color: #e74c3c; }
-        .site-desc { display: block; font-size: 0.85rem; color: #7f8c8d; font-weight: normal; margin-top: 4px; }
+        
+        a { text-decoration: none; color: var(--link-color); display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 8px; transition: all 0.2s; }
+        a:hover { background-color: var(--link-hover-bg); color: var(--link-hover-color); }
+        
+        /* 🌟 升级的图标动画样式 */
+        .site-icon {
+            width: 32px; 
+            height: 32px;
+            border-radius: 6px; 
+            flex-shrink: 0; 
+            background-color: #fff; 
+            padding: 2px;
+            /* 加入带有物理弹簧感的过渡动画 */
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+
+        /* 🌟 当鼠标悬停在链接 (a) 上时，内部的图标 (site-icon) 发生变化 */
+        a:hover .site-icon {
+            transform: scale(1.25) rotate(-8deg); /* 图标放大 1.25 倍，并向左倾斜 8 度 */
+        }
+
+        .link-text-group { display: flex; flex-direction: column; }
+        .site-name { font-weight: bold; font-size: 1.05rem; }
+        .site-desc { font-size: 0.85rem; color: var(--desc-color); margin-top: 5px; }
+
+        /* 🌟 全新的“是非题”门禁样式 */
+        #gatekeeper { background-color: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); text-align: center; max-width: 450px; margin: 100px auto; transition: background-color 0.3s; }
+        #gatekeeper h2 { color: var(--title-color); margin-bottom: 30px; font-size: 1.3rem; line-height: 1.5; }
+        
+        .button-group { display: flex; justify-content: center; gap: 20px; }
+        .gate-btn { padding: 12px 35px; font-size: 18px; cursor: pointer; color: white; border: none; border-radius: 8px; font-weight: bold; transition: transform 0.1s, opacity 0.3s; }
+        .gate-btn:active { transform: scale(0.95); } /* 点击时按钮微缩 */
+        
+        #btnYes { background-color: #2ecc71; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3); } /* 绿色 */
+        #btnNo { background-color: #e74c3c; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); } /* 红色 */
+        
+        #errorMessage { color: #e74c3c; margin-top: 25px; font-size: 1.5rem; font-weight: bold; display: none; }
+        
+        #mainContent { display: none; }
+        #themeToggleBtn { position: absolute; top: 20px; right: 20px; padding: 8px 15px; font-size: 14px; cursor: pointer; background-color: var(--card-bg); color: var(--text-color); border: 2px solid var(--line-color); border-radius: 20px; font-weight: bold; transition: all 0.3s; }
+        #themeToggleBtn:hover { transform: scale(1.05); }
     </style>
 </head>
 <body>
 
-    <h1>✨ 学习资料</h1>
+    <button id="themeToggleBtn">🌙 深色模式</button>
 
-    <div class="category-container">
+    <div id="gatekeeper">
+        <h2>是否已满18岁</h2>
         
-        <div class="category-card">
-            <div class="category-title">【在这里输入分类名称，例如：常用工具】</div>
-            <ul>
-                
-                <li>
-                    <a href="https://www.bilibili.com/" target="_blank">
-                        哔哩哔哩
-                        <span class="site-desc">【在这里输入一句话描述，例如：干杯！】</span>
-                    </a>
-                </li>
+        <div class="button-group">
+            <button id="btnYes" class="gate-btn">是 (Yes)</button>
+            <button id="btnNo" class="gate-btn">否 (No)</button>
+        </div>
 
-                <li>
-                    <a href="【在这里粘贴网址】" target="_blank">
-                        【在这里输入网站名称】
-                        <span class="site-desc">【在这里输入一句话描述】</span>
-                    </a>
-                </li>
-                
+        <p id="errorMessage">滚蛋！</p>
+    </div>
+
+    <div id="mainContent">
+        <h1>✨ 学习资料</h1>
+        <div class="category-container">
+            
+            <div class="category-card">
+                <div class="category-title">comic</div>
+                <ul>
+                    <li>
+                        <a href="https://www.bilibili.com/" target="_blank">
+                            <img src="https://www.google.com/s2/favicons?domain=bilibili.com&sz=64" class="site-icon" alt="icon">
+                            <div class="link-text-group">
+                                <span class="site-name">哔哩哔哩</span>
+                                <span class="site-desc">看视频与番剧</span>
+                            </div>
+                        </a>
+                    </li>
                 </ul>
-        </div>
 
-        <div class="category-card">
-            <div class="category-title">学习资料</div>
-            <ul>
-                <li>
-                    <a href="[    ]" target="_blank">
-                        【在这里输入网站名称】
-                        <span class="site-desc">【在这里输入一句话描述】</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
+                <ul>
+                    <li>
+                        <a href="https://www.18comic.vip/photo/350234/" target="_blank">
+                            <img src="https://www.google.com/s2/favicons?domain=18comic.vip&sz=64" class="site-icon" alt="icon">
+                            <div class="link-text-group">
+                                <span class="site-name">cy</span>
+                                <span class="site-desc">hero</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
 
-        <div class="category-card">
-            <div class="category-title">学习资料</div>
-            <ul>
-                <li>
-                    <a href="[    ]" target="_blank">
-                        【在这里输入网站名称】
-                        <span class="site-desc">【在这里输入一句话描述】</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        </div>
+            </div>
 
-        <div class="category-card">
-            <div class="category-title">学习资料</div>
-            <ul>
-                <li>
-                    <a href="[    ]" target="_blank">
-                        【在这里输入网站名称】
-                        <span class="site-desc">【在这里输入一句话描述】</span>
-                    </a>
-                </li>
-            </ul>
         </div>
+    </div>
+
+    <script>
+        const gatekeeper = document.getElementById('gatekeeper');
+        const mainContent = document.getElementById('mainContent');
+        const btnYes = document.getElementById('btnYes');
+        const btnNo = document.getElementById('btnNo');
+        const errorMessage = document.getElementById('errorMessage');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+        // 🌟🌟🌟 设定正确答案 🌟🌟🌟
+        // 如果正确答案是“是”，这里保持为 'yes'；如果正确答案是“否”，将其改为 'no'
+        const correctAnswer = 'yes'; 
+
+        // 处理回答的统一函数
+        function checkAnswer(userChoice) {
+            if (userChoice === correctAnswer) {
+                // 回答正确：隐藏门禁，显示网站内容
+                gatekeeper.style.display = 'none';
+                mainContent.style.display = 'block';
+            } else {
+                // 回答错误：暴躁踢人流程
+                errorMessage.style.display = 'block'; // 显示“滚蛋！”
+                
+                // 锁定两个按钮，并让它们变暗
+                btnYes.disabled = true;
+                btnNo.disabled = true;
+                btnYes.style.opacity = '0.5';
+                btnNo.style.opacity = '0.5';
+                
+                // 1.5秒后强制流放至空白页
+                setTimeout(function() {
+                    window.location.href = "about:blank"; 
+                }, 1500); 
+            }
+        }
+
+        // 给“是”和“否”按钮绑定点击事件
+        btnYes.addEventListener('click', function() { checkAnswer('yes'); });
+        btnNo.addEventListener('click', function() { checkAnswer('no'); });
+
+
+        // 深色模式切换逻辑
+        themeToggleBtn.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                themeToggleBtn.innerText = "☀️ 浅色模式";
+            } else {
+                themeToggleBtn.innerText = "🌙 深色模式";
+            }
+        });
+    </script>
 
 </body>
 </html>
